@@ -15,9 +15,11 @@ import cdo
 class Chain(object):
     """Enables chaining of cdo functions."""
 
-    def __init__(self, value):
+    def __init__(self, ifiles, ofiles, opts):
         """Initialize 'Chain' object."""
-        self._value = value
+        self._ifiles = ifiles
+        self._ofiles = ofiles
+        self._opts = opts
 
     def value(self):
         """Return current value of the chain operations."""
