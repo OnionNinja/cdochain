@@ -4,4 +4,5 @@
 
 
 def formats(options):
+    """Format options."""
     return ",".join([str(x) if not isinstance(x, str) else x for x in options])
