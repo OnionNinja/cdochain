@@ -86,3 +86,6 @@ celerybeat-schedule
 # virtualisation
 venv/*
 *.DS_Store
+
+# notebooks
+*.ipynb
