@@ -2,9 +2,8 @@
 # -*- encoding: utf-8 -*-
 """Tests for chaining module."""
 
-# import pytest
-# from cdochain import chaining as ch
-# from cdochain import exceptions as ex
+import pytest
+from cdochain import exceptions as ex
 from cdochain import helpers as hlp
 import cdochain.chaining as cch
 import cdo
@@ -54,6 +53,7 @@ class Test_Calculations(object):
         res = meridian.execute()
         assert np.array_equal(ncd.Dataset(res)['tas'][:],
                               self.data_iter['tas'][:])
+        os.remove(res)
 
 
 def test_format_inputs():
@@ -63,18 +63,22 @@ def test_format_inputs():
     assert hlp.formats(['ifile', 532, '412']) == 'ifile,532,412'
     assert isinstance(hlp.formats(['ifile', 532, '412']), str)
 
-# def test_initializing():
-#     """Test if initilalisation is working."""
-#     init = ch.Chain("inputfile", "outputfile", "options")
-#     assert isinstance(init, ch.Chain)
 
-# def test_invalid_method():
-#     """Test if invalid input raises proper exception."""
-#     init = ch.Chain("inputfile", "outputfile", "options")
-#     with pytest.raises(ex.InvalidMethod):
-#         init.coolmean("32")
+def test_initializing():
+    """Test if initilalisation is working."""
+    init = cch.Chain("inputfile", "outputfile", "options")
+    assert isinstance(init, cch.Chain)
 
-# def test_valid_method():
-#     """Test if one valid input is accepted."""
-#     init = ch.Chain("inputfile", "outputfile", "options")
-#     init.mermean("32")
+
+def test_invalid_method():
+    """Test if invalid input raises proper exception."""
+    init = cch.Chain("inputfile", "outputfile", "options")
+    with pytest.raises(ex.InvalidMethod) as err:
+        init.coolmean("32")
+    assert "Invalid" in str(err)
+
+
+def test_valid_method():
+    """Test if one valid input is accepted."""
+    init = cch.Chain("inputfile", "outputfile", "options")
+    init.mermean("32")
