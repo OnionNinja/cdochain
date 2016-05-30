@@ -6,6 +6,7 @@
 # from cdochain import chaining as ch
 # from cdochain import exceptions as ex
 from cdochain import helpers as hlp
+import cdochain.chaining as cch
 import cdo
 import netCDF4 as ncd
 import numpy as np
@@ -17,19 +18,19 @@ class Test_Calculations(object):
 
     def setup(self):
         """Setup process."""
-        ifile = './test/testdata/sresa1b_ncar_ccsm3-example.nc'
+        self.ifile = './test/testdata/sresa1b_ncar_ccsm3-example.nc'
         cdomethods = cdo.Cdo()
-        self.tmp_iter = cdomethods.mermean(input=ifile,
-                                           output=ifile[:-3]+'-mer.nc',
+        self.tmp_iter = cdomethods.mermean(input=self.ifile,
+                                           output=self.ifile[:-3]+'-mer.nc',
                                            options="-O -f nc")
         self.final = cdomethods.zonmean(input=self.tmp_iter,
-                                        output=ifile[:-3]+'-mer-zon.nc',
+                                        output=self.ifile[:-3]+'-mer-zon.nc',
                                         options="-O -f nc")
         self.data_iter = ncd.Dataset(self.final)
 
-        tmp_at_one_go = "-mermean "+ifile
+        tmp_at_one_go = "-mermean "+self.ifile
         self.final_str = cdomethods.zonmean(input=tmp_at_one_go,
-                                            output=ifile[:-3] +
+                                            output=self.ifile[:-3] +
                                             '-mer-zon-str.nc',
                                             options="-O -f nc")
         self.datas = ncd.Dataset(self.final_str)
@@ -43,6 +44,16 @@ class Test_Calculations(object):
     def test_setup(self):
         """Test if setup was successfull."""
         assert np.array_equal(self.data_iter['tas'][:], self.datas['tas'][:])
+
+    def test_single_concatination(self):
+        """Test if cdochain works with only one input."""
+        routine = cch.Chain(self.ifile,
+                            self.tmp_iter[:-3]+'-mer-ch.nc',
+                            '-O -f nc')
+        meridian = routine.mermean()
+        res = meridian.result()
+        assert np.array_equal(ncd.Dataset(res['tas'][:]),
+                              self.data_iter['tas'][:])
 
 
 def test_format_inputs():
