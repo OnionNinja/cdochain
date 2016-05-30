@@ -50,9 +50,9 @@ class Test_Calculations(object):
         routine = cch.Chain(self.ifile,
                             self.tmp_iter[:-3]+'-mer-ch.nc',
                             '-O -f nc')
-        meridian = routine.mermean()
-        res = meridian.result()
-        assert np.array_equal(ncd.Dataset(res['tas'][:]),
+        meridian = routine.mermean().zonmean()
+        res = meridian.execute()
+        assert np.array_equal(ncd.Dataset(res)['tas'][:],
                               self.data_iter['tas'][:])
 
 

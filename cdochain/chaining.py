@@ -2,83 +2,143 @@
 # -*- encoding: utf-8 -*-
 """Main module for chaining operation.
 
-Shamelessly stolen from:
+Idea is shamelessly stolen from:
     http://derrickgilland.com/posts/lazy-method-chaining-in-python/
     and
     https://github.com/dgilland/pydash/pydash/chaining.py
 """
 from __future__ import absolute_import
-from cdochain.exceptions import InvalidMethod
-import cdo
+from cdochain import exceptions
+from cdo import Cdo
 
 
 class Chain(object):
-    """Enables chaining of cdo functions."""
+    """Main chain class for chaining of cdo operations."""
 
-    def __init__(self, ifiles, ofiles, opts):
-        """Initialize 'Chain' object."""
-        self._ifiles = ifiles
-        self._ofiles = ofiles
-        self._opts = opts
+    def __init__(self, ifile, ofile, options="-O -f nc", lc=None):
+        """Initialise environment of files.
 
-    def value(self):
-        """Return current value of the chain operations."""
-        if isinstance(self._value, ChainWrapper):
-            self._value = self._value.unwrap()
-        return self._value
+        Arguments
+        ---------
+        ifile : str
+            File on which to operate
+        ofile : str
+            Name of output file
+        options : str
+            Options used for writting to file
+        lc : None or Wrapping
+            Last command used
+
+        Returns
+        -------
+        chain : Chain
+            Chain object
+        """
+        self._ifile = ifile
+        self._ofile = ofile
+        self._opts = options
+        self._last_command = lc
+
+    def __getattr__(self, name):
+        """Decide if given attribute is supported by cdo.
+
+        Arguments
+        ---------
+        name : str
+            Attribute being searched for
+
+        Returns
+        -------
+        last_command : Wrapping
+            The last command as a wrapping class object
+        """
+        if self.valid_cdo_method(name):
+            if isinstance(self._last_command, Wrapping):
+                self._ifile = self._last_command.to_cmdstr()
+            self._last_command = Wrapping(self._ifile,
+                                          name, self._ofile, self._opts)
+        return self._last_command
+
+    def __repr__(self):
+        """String representation of objct."""
+        return str(self.__dict__)
 
     @staticmethod
-    def get_method(name):
-        """Return valid cdo method."""
-        cdoobj = cdo.Cdo()
-        method = getattr(cdoobj, name, None)
+    def valid_cdo_method(name):
+        """Valide cdo method.
 
+        Arguments
+        ---------
+        name : str
+            Method being searched for
+
+        Returns:
+        --------
+        method : Object (function)
+            executeable object function
+
+        Raises:
+        -------
+        InvalidMethod Error if name can't be found.
+        """
+        method = getattr(Cdo(), name, False)
         if not callable(method):
-            raise InvalidMethod('Invalid cdo method: {0}'.format(name))
-
+            raise exceptions.InvalidMethod("Invalid method: {}".format(name))
         return method
 
-    def __getattr__(self, attr):
-        """Proxy attribute access to cdo."""
-        return ChainWrapper(self._value, self.get_method(attr))
+    def execute(self):
+        """Execute last command."""
+        return self._last_command.execute() if self._last_command else False
 
 
-class ChainWrapper(object):
-    """Wrap cdo method call within a ChainWrapper context."""
+class Wrapping(object):
+    """Wrapping object for commands."""
 
-    def __init__(self, value, method):
-        """Initialize wrapper."""
-        self._value = value
+    def __init__(self, ifile, method, of, op):
+        """Wrapping object for commands in chain."""
+        assert isinstance(ifile, str)
+        assert isinstance(method, str)
         self.method = method
+        self._ifile = ifile
         self.args = ()
-        self.kargs = {}
+        self.kwargs = {}
+        self._of = of
+        self._op = op
 
-    def unwrap(self):
-        """Execute method with _value, args, and kargs.
+    def to_cmdstr(self):
+        """Turn comamand in supported string format of cdo."""
+        if self.args:
+            return "-{},{} {}".format(self.method, self.args, self._ifile)
+        return "-{} {}".format(self.method, self._ifile)
 
-        If _value is an instance of ChainWrapper,
-        then unwrap it before calling method.
-        """
-        if isinstance(self._value, ChainWrapper):
-            self._value = self._value.unwrap()
-        return self.method(self._value, *self.args, **self.kargs)
+    def __call__(self, *args, **kwargs):
+        """Save args and kwargs of method call as attributes."""
+        self.args = ",".join([str(x) for x in list(args)])
+        self.kwargs = kwargs
+        s = self.__class__.__new__(self.__class__)
+        s.__dict__ = self.__dict__.copy()
+        return Chain(self._ifile, self._of, self._op, lc=s)
 
-    def __call__(self, *args, **kargs):
-        """Invoke the method.
+    def __repr__(self):
+        """Return string representation of chain."""
+        return self.to_cmdstr()
 
-        Invoke the method with value as the first argument and return a new
-        Chain object with the return value.
-        """
-        self.args = args
-        self.kargs = kargs
-        return Chain(self)
+    def execute(self):
+        """Execute chain."""
+        f = getattr(Cdo(), self.method, None)
+        if self.args:
+            return f(self.args,
+                     input=self._ifile,
+                     output=self._of,
+                     options=self._op)
+        return f(input=self._ifile, output=self._of, options=self._op)
 
 
-def chain(value):
-    """Create 'Chain' object.
-
-    Creates a 'Chain' object which wraps the given value to enable
-    intuitive method chaining. Chaining is lazy and won't compute a final value
-    until 'Chain.value' is called.
-    """
-    return Chain(value)
+# def chain(value):
+#     """Create 'Chain' object.
+#
+#     Creates a 'Chain' object which wraps the given value to enable
+#     intuitive method chaining. Chaining is lazy and won't compute a value
+#     until 'Chain.value' is called.
+#     """
+#     return Chain(value)
