@@ -30,15 +30,27 @@ class Test_Calculations(object):
         tmp_at_one_go = "-mermean "+self.ifile
         self.final_str = cdomethods.zonmean(input=tmp_at_one_go,
                                             output=self.ifile[:-3] +
-                                            '-mer-zon-str.nc',
-                                            options="-O -f nc")
+                                            '-mer-zon-str.nc')
         self.datas = ncd.Dataset(self.final_str)
+        self.sellev = cdomethods.sellevidx(12, input=self.ifile,
+                                           output=self.ifile[:-3]+'-lvl12.nc',
+                                           options="-O -f nc")
 
     def teardown(self):
         """Teardown process."""
         os.remove(self.tmp_iter)
         os.remove(self.final)
         os.remove(self.final_str)
+        os.remove(self.sellev)
+
+    def test_selarg(self):
+        """Test chaining with arguments."""
+        routine = cch.Chain(self.ifile, self.ifile[:-3]+'seltest.nc')
+        sellvl12 = routine.sellevidx(12)
+        res = sellvl12.execute()
+        assert np.array_equal(ncd.Dataset(res)['ua'][:],
+                              ncd.Dataset(self.sellev)['ua'][:])
+        os.remove(res)
 
     def test_setup(self):
         """Test if setup was successfull."""
@@ -46,14 +58,19 @@ class Test_Calculations(object):
 
     def test_single_concatination(self):
         """Test if cdochain works with only one input."""
-        routine = cch.Chain(self.ifile,
-                            self.tmp_iter[:-3]+'-mer-ch.nc',
-                            '-O -f nc')
+        routine = cch.Chain(self.ifile, self.tmp_iter[:-3]+'-mer-ch.nc')
         meridian = routine.mermean().zonmean()
         res = meridian.execute()
         assert np.array_equal(ncd.Dataset(res)['tas'][:],
                               self.data_iter['tas'][:])
         os.remove(res)
+
+    def test_str_format(self):
+        """Testing successfull string formation."""
+        routine = cch.Chain(self.ifile, self.ifile[:-3]+'str_test.nc')
+        res = routine.sellevidx(24)
+        assert res._last_command.to_cmdstr() == "-sellevidx,24 {}".format(
+            self.ifile)
 
 
 def test_format_inputs():
