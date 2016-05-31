@@ -90,9 +90,8 @@ def test_initializing():
 def test_invalid_method():
     """Test if invalid input raises proper exception."""
     init = cch.Chain("inputfile", "outputfile", "options")
-    with pytest.raises(ex.InvalidMethod) as err:
+    with pytest.raises(ex.InvalidMethod):
         init.coolmean("32")
-    assert "Invalid" in str(err)
 
 
 def test_valid_method():
