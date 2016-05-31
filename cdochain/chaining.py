@@ -15,7 +15,7 @@ from cdo import Cdo
 class Chain(object):
     """Main chain class for chaining of cdo operations."""
 
-    def __init__(self, ifile, ofile, options="-O -f nc", lc=None):
+    def __init__(self, ifile, ofile, options="-O -f nc"):
         """Initialise environment of files.
 
         Arguments
@@ -37,7 +37,7 @@ class Chain(object):
         self._ifile = ifile
         self._ofile = ofile
         self._opts = options
-        self._last_command = lc
+        self._last_command = None
 
     def __getattr__(self, name):
         """Decide if given attribute is supported by cdo.
@@ -115,9 +115,13 @@ class Wrapping(object):
         """Save args and kwargs of method call as attributes."""
         self.args = ",".join([str(x) for x in list(args)])
         self.kwargs = kwargs
+
         s = self.__class__.__new__(self.__class__)
         s.__dict__ = self.__dict__.copy()
-        return Chain(self._ifile, self._of, self._op, lc=s)
+        new_chain = Chain(self._ifile, self._of, self._op)
+        new_chain._last_command = s
+
+        return new_chain
 
     def __repr__(self):
         """Return string representation of chain."""
