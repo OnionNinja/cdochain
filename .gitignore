@@ -86,3 +86,6 @@ venv/*
 
 # notebooks
 *.ipynb
+
+# registration
+register.py
