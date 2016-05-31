@@ -80,9 +80,6 @@ celerybeat-schedule
 # Spyder project settings
 .spyderproject
 
-# netcdf files
-*.nc
-
 # virtualisation
 venv/*
 *.DS_Store
