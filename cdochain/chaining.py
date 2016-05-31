@@ -106,7 +106,7 @@ class Wrapping(object):
         self._op = op
 
     def to_cmdstr(self):
-        """Turn comamand in supported string format of cdo."""
+        """Turn command in supported string format of cdo."""
         if self.args:
             return "-{},{} {}".format(self.method, self.args, self._ifile)
         return "-{} {}".format(self.method, self._ifile)
@@ -127,9 +127,7 @@ class Wrapping(object):
         """Execute chain."""
         f = getattr(Cdo(), self.method, None)
         if self.args:
-            return f(self.args,
-                     input=self._ifile,
-                     output=self._of,
+            return f(self.args, input=self._ifile, output=self._of,
                      options=self._op)
         return f(input=self._ifile, output=self._of, options=self._op)
 
