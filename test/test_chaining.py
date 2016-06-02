@@ -78,12 +78,14 @@ inputs = ['./test/testdata/RC1SD-base-08__201301_ECHAM5_tm1-aps-qm1.nc',
           './test/testdata/RC1SD-base-08__201304_ECHAM5_tm1-aps-qm1.nc']
 
 
-# @pytest.mark.parametrize("filelist", [inputs])
-# def test_multiple_files_list(filelist):
-#     """Test the usage of multiple files as input."""
-#     out = cch.Chain(ifile=filelist, ofile='./test/testdata/outputs.nc')
-#     assert out == './test/testdata/outputs.nc'
-#     os.remove(out)
+@pytest.mark.slow
+@pytest.mark.parametrize("filelist", [inputs])
+def test_multiple_files_list(filelist):
+    """Test the usage of multiple files as input."""
+    out = cch.Chain(ifile=filelist, ofile='./test/testdata/outputs.nc')
+    assert out._ifile == '/tmp/outputs.nc'
+    os.remove(out._ifile)
+
 
 @pytest.mark.slow
 @pytest.mark.parametrize("filelist",
@@ -92,6 +94,7 @@ def test_multiple_files_glob(filelist):
     """Test the usage of multiple files as input."""
     out = cch.Chain(ifile=filelist, ofile='./test/testdata/outputs.nc')
     assert out._ifile == '/tmp/outputs.nc'
+    os.remove(out._ifile)
 
 
 def test_format_inputs():

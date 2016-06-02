@@ -89,3 +89,6 @@ venv/*
 
 # registration
 register.py
+
+# some nc files
+**/RC1SD-base-08__2013*.nc
