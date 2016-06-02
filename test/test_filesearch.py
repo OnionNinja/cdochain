@@ -20,17 +20,17 @@ class Test_Filesearch(object):
         self.text = './test/testdata/test.txt'
         open(self.ofile, 'a').close()
         open(self.outsi, 'a').close()
+        open(self.text, 'a').close()
 
     def teardown(self):
-        os.remove(self.ifile)
         os.remove(self.ofile)
         os.remove(self.outsi)
         os.remove(self.text)
 
     def test_glob(self):
         assert len(glob.glob('.')) == 1
-        assert len(glob.glob('./testdata/')) == 3
-        assert len(glob.glob('./testdata/*.txt')) == 1
-        assert len(glob.glob('./testdata/*.nc')) == 2
-        assert len(glob.glob('./testdata/test*')) == 1
-        assert len(glob.glob('./testdata/test*t')) == 1
+        assert len(glob.glob('./test/testdata/*')) == 7
+        assert len(glob.glob('./test/testdata/*.txt')) == 1
+        assert len(glob.glob('./test/testdata/*.nc')) == 6
+        assert len(glob.glob('./test/testdata/test*')) == 1
+        assert len(glob.glob('./test/testdata/test*t')) == 1
