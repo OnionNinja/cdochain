@@ -72,6 +72,27 @@ class Test_Calculations(object):
         assert res._last_command.to_cmdstr() == "-sellevidx,24 {}".format(
             self.ifile)
 
+inputs = ['./test/testdata/RC1SD-base-08__201301_ECHAM5_tm1-aps-qm1.nc',
+          './test/testdata/RC1SD-base-08__201302_ECHAM5_tm1-aps-qm1.nc',
+          './test/testdata/RC1SD-base-08__201303_ECHAM5_tm1-aps-qm1.nc',
+          './test/testdata/RC1SD-base-08__201304_ECHAM5_tm1-aps-qm1.nc']
+
+
+# @pytest.mark.parametrize("filelist", [inputs])
+# def test_multiple_files_list(filelist):
+#     """Test the usage of multiple files as input."""
+#     out = cch.Chain(ifile=filelist, ofile='./test/testdata/outputs.nc')
+#     assert out == './test/testdata/outputs.nc'
+#     os.remove(out)
+
+@pytest.mark.slow
+@pytest.mark.parametrize("filelist",
+                         ["./test/testdata/RC1SD-base-08__20130*.nc"])
+def test_multiple_files_glob(filelist):
+    """Test the usage of multiple files as input."""
+    out = cch.Chain(ifile=filelist, ofile='./test/testdata/outputs.nc')
+    assert out._ifile == '/tmp/outputs.nc'
+
 
 def test_format_inputs():
     """Test if formating of options works."""

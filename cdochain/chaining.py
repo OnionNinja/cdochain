@@ -10,6 +10,8 @@ Idea is shamelessly stolen from:
 from __future__ import absolute_import
 from cdochain import exceptions
 from cdo import Cdo
+from glob import glob as glb
+import os
 
 
 class Chain(object):
@@ -34,6 +36,12 @@ class Chain(object):
         chain : Chain
             Chain object
         """
+        # first merge files if several files are declared as input
+        inputs = glb(ifile)
+        if len(inputs) > 1:
+            tmpfile = os.path.basename(ofile)
+            ifile = Cdo().mergetime(input=inputs, output='/tmp/'+tmpfile,
+                                    options=options)
         self._ifile = ifile
         self._ofile = ofile
         self._opts = options
