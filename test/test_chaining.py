@@ -97,6 +97,11 @@ def test_multiple_files_glob(filelist):
     os.remove(out._ifile)
 
 
+def test_return_types():
+    """Test for different return types."""
+    assert False
+
+
 def test_format_inputs():
     """Test if formating of options works."""
     assert hlp.formats(['235', 532, 412]) == '235,532,412'
