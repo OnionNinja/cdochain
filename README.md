@@ -15,17 +15,14 @@ python3.5 setup.py install
 
 ## Usage
 
-### TL;DR
 ```python3
 from cdochain import Chain as cch
 
 ifile='./tests/testdata/sresa1b_ncar_ccsm3-example.nc'
 ofile = '/tmp/tmp.nc'
 data = cch.Chain(ifile=ifile, ofile=ofile)
-routine = data.mermean(41).mermean(51).sellevidx(53)
+routine = data.mermean().zonmean().sellevidx(53)
 routine.execute()
-
 ```
 
-
-### Detailed
+... to be continued

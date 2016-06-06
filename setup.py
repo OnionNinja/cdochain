@@ -11,11 +11,10 @@ else:
     long_description = ""
 
 setup(name='cdochain',
-      version='0.1a4',
+      version='0.1a7',
       description='Easy chaining of cdo methods.',
       author='Uğur Çayoğlu',
       url='https://github.com/OnionNinja/cdochain',
-      #   download_url='https://github.com/onionninja/justplot/tarball/v0.1.2',
       license='MIT',
       packages=['cdochain'],
       install_requires=[
