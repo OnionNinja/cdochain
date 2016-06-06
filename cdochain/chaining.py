@@ -44,6 +44,12 @@ class Chain(object):
         self._opts = options
         self._last_command = None
 
+    def _generate(self):
+        """Generate a copy of this instance."""
+        new = self.__class__.__new__(self.__class__)
+        new.__dict__ = self.__dict__.copy()
+        return new
+
     def __getattr__(self, name):
         """Decide if given attribute is supported by cdo.
 
@@ -57,12 +63,14 @@ class Chain(object):
         last_command : Wrapping
             The last command as a wrapping class object
         """
-        if self.valid_cdo_method(name):
-            if isinstance(self._last_command, Wrapping):
-                self._ifile = self._last_command.to_cmdstr()
-            self._last_command = Wrapping(self._ifile,
-                                          name, self._ofile, self._opts)
-        return self._last_command
+        wrapper = self._generate()
+
+        if wrapper.valid_cdo_method(name):
+            if isinstance(wrapper._last_command, Wrapping):
+                wrapper._ifile = wrapper._last_command.to_cmdstr()
+            wrapper._last_command = Wrapping(wrapper._ifile,
+                                             name, wrapper._ofile, wrapper._opts)
+        return wrapper._last_command
 
     def __repr__(self):
         """String representation of objct."""

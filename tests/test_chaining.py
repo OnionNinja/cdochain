@@ -86,6 +86,7 @@ def test_reusage_of_source():
     h3 = source.sellevidx(1)
     assert h2._ifile == inputs[0]
     assert h3._ifile == inputs[0]
+    assert h1._ifile != inputs[0]
     assert 'mermean' not in h1._ifile
 
 
