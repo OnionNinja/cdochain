@@ -69,7 +69,8 @@ class Chain(object):
             if isinstance(wrapper._last_command, Wrapping):
                 wrapper._ifile = wrapper._last_command.to_cmdstr()
             wrapper._last_command = Wrapping(wrapper._ifile,
-                                             name, wrapper._ofile, wrapper._opts)
+                                             name, wrapper._ofile,
+                                             wrapper._opts)
         return wrapper._last_command
 
     def __repr__(self):
