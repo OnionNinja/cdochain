@@ -16,11 +16,14 @@ def returntype_of_output(ofile):
     If file is input, then a None object will be returned.
     If 'array:<var>' is entered, a numpy array of <var> will be returned.
     If 'maarray:<var>' is entered, a masked numpy array of <var> will
+    If 'netcdf' is entered, a masked netcdf4.Dataset will
     be returned.
     """
     assert isinstance(ofile, str), "Output argument not a string value"
     if ofile[-3:] == '.nc':
         return None
+    if ofile == 'netcdf':
+        return {'returnCdf': True}
 
     arr = ofile.split(':')
     try:
