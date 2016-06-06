@@ -14,10 +14,10 @@ class Test_Filesearch(object):
     """
 
     def setup(self):
-        self.ifile = './test/testdata/sresa1b_ncar_ccsm3-example.nc'
+        self.ifile = './tests/testdata/sresa1b_ncar_ccsm3-example.nc'
         self.ofile = self.ifile[:-3]+'tmp.nc'
-        self.outsi = './test/outside-example.nc'
-        self.text = './test/testdata/test.txt'
+        self.outsi = './tests/outside-example.nc'
+        self.text = './tests/testdata/test.txt'
         open(self.ofile, 'a').close()
         open(self.outsi, 'a').close()
         open(self.text, 'a').close()
@@ -29,8 +29,8 @@ class Test_Filesearch(object):
 
     def test_glob(self):
         assert len(glob.glob('.')) == 1
-        assert len(glob.glob('./test/testdata/*')) == 7
-        assert len(glob.glob('./test/testdata/*.txt')) == 1
-        assert len(glob.glob('./test/testdata/*.nc')) == 6
-        assert len(glob.glob('./test/testdata/test*')) == 1
-        assert len(glob.glob('./test/testdata/test*t')) == 1
+        assert len(glob.glob('./tests/testdata/*')) == 7
+        assert len(glob.glob('./tests/testdata/*.txt')) == 1
+        assert len(glob.glob('./tests/testdata/*.nc')) == 6
+        assert len(glob.glob('./tests/testdata/test*')) == 1
+        assert len(glob.glob('./tests/testdata/test*t')) == 1
