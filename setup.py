@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """Setup of cdochain."""
 
-from distutils.core import setup
+from setuptools import setup
 import os
 
 if os.path.exists('README.rst'):
@@ -11,10 +11,11 @@ else:
     long_description = ""
 
 setup(name='cdochain',
-      version='0.1a',
+      version='0.1a4',
       description='Easy chaining of cdo methods.',
-      author='uc',
-      author_email='Ugur.Cayoglu@kit.edu',
+      author='Uğur Çayoğlu',
+      url='https://github.com/OnionNinja/cdochain',
+      #   download_url='https://github.com/onionninja/justplot/tarball/v0.1.2',
       license='MIT',
       packages=['cdochain'],
       install_requires=[
