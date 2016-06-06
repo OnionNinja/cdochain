@@ -27,6 +27,9 @@ class Chain(object):
             Name of output file
         options : str
             Options used for writting to file
+
+        Attributes
+        -----------
         lc : None or Wrapping
             Last command used
 
@@ -130,11 +133,17 @@ class Wrapping(object):
         return self.to_cmdstr()
 
     def execute(self):
+        self._returntype = hlp.returntype_of_output(self._of)
         """Execute chain."""
         f = getattr(Cdo(), self.method, None)
-        if self.args:
+        if self._returntype and self.args:
+            return f(self.args, input=self._ifile, options=self._op,
+                     **self._returntype)
+        elif self.args:
             return f(self.args, input=self._ifile, output=self._of,
                      options=self._op)
+        if self._returntype:
+            return f(input=self._ifile, options=self._op, **self._returntype)
         return f(input=self._ifile, output=self._of, options=self._op)
 
 

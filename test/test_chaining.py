@@ -97,9 +97,23 @@ def test_multiple_files_glob(filelist):
     os.remove(out._ifile)
 
 
-def test_return_types():
+@pytest.mark.parametrize('ofile,ret', [('/tmp/tmp.nc', None),
+                                       ('Array:tm1', {'returnArray': 'tm1'}),
+                                       ('MaArray:tm1',
+                                        {'returnMaArray': 'tm1'})])
+def test_return_types(ofile, ret):
     """Test for different return types."""
-    assert False
+    assert hlp.returntype_of_output(ofile) == ret
+
+
+@pytest.mark.parametrize('output,expected',[('/tmp/tmp.nc', str),
+                                            ('array:tm1', np.ndarray),
+                                            ('maarray:tm1', np.ndarray),
+                                            ])
+def test_return_types_in_chain(output, expected):
+    init = cch.Chain(inputs[0], output)
+    lvl = init.sellevidx(3).execute()
+    assert isinstance(lvl, expected)
 
 
 def test_format_inputs():
@@ -112,18 +126,18 @@ def test_format_inputs():
 
 def test_initializing():
     """Test if initilalisation is working."""
-    init = cch.Chain("inputfile", "outputfile", "options")
+    init = cch.Chain("inputfile", "outputfile.nc", "options")
     assert isinstance(init, cch.Chain)
 
 
 def test_invalid_method():
     """Test if invalid input raises proper exception."""
-    init = cch.Chain("inputfile", "outputfile", "options")
+    init = cch.Chain("inputfile", "outputfile.nc", "options")
     with pytest.raises(ex.InvalidMethod):
         init.coolmean("32")
 
 
 def test_valid_method():
     """Test if one valid input is accepted."""
-    init = cch.Chain("inputfile", "outputfile", "options")
+    init = cch.Chain("inputfile", "outputfile.nc", "options")
     init.mermean("32")
