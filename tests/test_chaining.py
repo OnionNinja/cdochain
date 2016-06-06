@@ -81,10 +81,12 @@ inputs = ['./tests/testdata/RC1SD-base-08__201301_ECHAM5_tm1-aps-qm1.nc',
 def test_reusage_of_source():
     """Source ready for reuse."""
     source = cch.Chain(ifile=inputs[0], ofile='/tmp/tmp.nc')
-    h1 = source.mermean(2).zonmean()
-    h2 = source.sellevidx(2)
-    assert source._ifile == inputs[0]
-    assert h1._ifile != h2._ifile
+    h2 = source.mermean()
+    h1 = source.sellevidx(2).zonmean()
+    h3 = source.sellevidx(1)
+    assert h2._ifile == inputs[0]
+    assert h3._ifile == inputs[0]
+    assert 'mermean' not in h1._ifile
 
 
 @pytest.mark.slow
