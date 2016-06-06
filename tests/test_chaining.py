@@ -78,6 +78,15 @@ inputs = ['./tests/testdata/RC1SD-base-08__201301_ECHAM5_tm1-aps-qm1.nc',
           './tests/testdata/RC1SD-base-08__201304_ECHAM5_tm1-aps-qm1.nc']
 
 
+def test_reusage_of_source():
+    """Source ready for reuse."""
+    source = cch.Chain(ifile=inputs[0], ofile='/tmp/tmp.nc')
+    h1 = source.mermean(2).zonmean()
+    h2 = source.sellevidx(2)
+    assert source._ifile == inputs[0]
+    assert h1._ifile != h2._ifile
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize("filelist", [inputs])
 def test_multiple_files_list(filelist):
@@ -101,7 +110,7 @@ def test_multiple_files_glob(filelist):
                                        ('Array:tm1', {'returnArray': 'tm1'}),
                                        ('MaArray:tm1',
                                         {'returnMaArray': 'tm1'}),
-                                       ('netcdf4',{'returnCdf':True})])
+                                       ('netcdf4', {'returnCdf': True})])
 def test_return_types(ofile, ret):
     """Test for different return types."""
     assert hlp.returntype_of_output(ofile) == ret
