@@ -106,10 +106,10 @@ def test_return_types(ofile, ret):
     assert hlp.returntype_of_output(ofile) == ret
 
 
-@pytest.mark.parametrize('output,expected',[('/tmp/tmp.nc', str),
-                                            ('array:tm1', np.ndarray),
-                                            ('maarray:tm1', np.ndarray),
-                                            ])
+@pytest.mark.parametrize('output,expected', [('/tmp/tmp.nc', str),
+                                             ('array:tm1', np.ndarray),
+                                             ('maarray:tm1', np.ndarray),
+                                             ])
 def test_return_types_in_chain(output, expected):
     init = cch.Chain(inputs[0], output)
     lvl = init.sellevidx(3).execute()
