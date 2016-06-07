@@ -11,7 +11,7 @@ else:
     long_description = ""
 
 setup(name='cdochain',
-      version='0.1a7',
+      version='0.2a722',
       description='Easy chaining of cdo methods.',
       author='Uğur Çayoğlu',
       author_email='urcyglu@gmail.com',
@@ -24,11 +24,14 @@ setup(name='cdochain',
       ],
       classifiers=[
           # More at http://pypi.python.org/pypi?%3Aaction=list_classifiers
-          'Development Status :: 2 - Pre-Alpha',
+          'Development Status :: 3 - Alpha',
           'Intended Audience :: Science/Research',
           'Natural Language :: English',
           'Operating System :: POSIX :: Linux',
           'Programming Language :: Python :: 3 :: Only',
+          'Topic :: Scientific/Engineering :: GIS',
+          'Topic :: Scientific/Engineering :: Information Analysis',
+          'Intended Audience :: Science/Research',
         ],
       keywords=['netcdf', 'cdo', 'wrapper', 'chaining'],
       long_description=long_description,
