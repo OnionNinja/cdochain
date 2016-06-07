@@ -22,7 +22,7 @@ def returntype_of_output(ofile):
     assert isinstance(ofile, str), "Output argument not a string value"
     if ofile[-3:] == '.nc':
         return None
-    if ofile == 'netcdf4':
+    if ofile.lower() == 'netcdf4':
         return {'returnCdf': True}
 
     arr = ofile.split(':')
