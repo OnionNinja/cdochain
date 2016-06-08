@@ -155,8 +155,8 @@ class Wrapping(object):
         return self.to_cmdstr()
 
     def execute(self):
-        self._special_return = hlp.check_if_special_return(self._of)
         """Execute chain."""
+        self._special_return = hlp.check_if_special_return(self._of)
         f = getattr(Cdo(), self.method, None)
         if self._special_return and self.args:
             return f(self.args, input=self._ifile, options=self._op,
