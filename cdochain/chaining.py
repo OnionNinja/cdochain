@@ -135,7 +135,9 @@ class Wrapping(object):
 
     def __call__(self, *args, **kwargs):
         """Save args and kwargs of method call as attributes."""
-        self.args = ",".join([str(x) for x in list(args)])
+        if args and len(args) == 1 and isinstance(args[0], list):
+            args = args[0]
+        self.args = ",".join([str(x) for x in args])
         self.kwargs = kwargs
 
         s = self.__class__.__new__(self.__class__)
