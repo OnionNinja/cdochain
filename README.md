@@ -31,7 +31,7 @@ from cdochain import chaining as cch
 
 input = './tests/testdata/sresa1b_ncar_ccsm3-example.nc'
 output = './enso34-mm.nc'
-data = cch.Chain(input=input, output=output)
+data = cch.Chain(ifile=input, ofile=output)
 enso34 = data.sellonlatbox(190,240,-5,5).monmean()
 out = enso34.execute()
 ```
@@ -69,19 +69,19 @@ For defining the output we have several options.
 - To output a **file on disc**:
 
 ```python
-data = cch.Chain(input=input, output='/path/to/output.nc')
+data = cch.Chain(ifile=input, ofile='/path/to/output.nc')
 ```
 - To output an **netcdf4.Dataset** object:
 
 ```python
-data = cch.Chain(input=input, output='netCDF4')
+data = cch.Chain(ifile=input, ofile='netCDF4')
 ```
 - To output an **numpy.ndarray** object:
 
 ```python
-data = cch.Chain(input=input, output='array:<var>')  # numpy.ndarray
+data = cch.Chain(ifile=input, ofile='array:<var>')  # numpy.ndarray
 # or
-data = cch.Chain(input=input, output='maarray:<var>')  # masked numpy.ndarray
+data = cch.Chain(ifile=input, ofile='maarray:<var>')  # masked numpy.ndarray
 ```
 `<var>` defines the variable to be extracted and saved to numpy.ndarray.
 
