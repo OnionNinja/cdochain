@@ -78,6 +78,14 @@ inputs = ['./tests/testdata/RC1SD-base-08__201301_ECHAM5_tm1-aps-qm1.nc',
           './tests/testdata/RC1SD-base-08__201304_ECHAM5_tm1-aps-qm1.nc']
 
 
+def test_entry_is_list():
+    source = cch.Chain(ifile=inputs[0], ofile='/tmp/tmp.nc')
+    plvls = [0.99, 4.28, 11.12, 23.15, 42.59]
+    plvls_str = ','.join([str(x) for x in plvls])
+    calc = source.ml2pl(plvls)
+    assert str(calc._last_command) == '-ml2pl,{} {}'.format(plvls_str, inputs[0])
+
+
 def test_reusage_of_source():
     """Source ready for reuse."""
     source = cch.Chain(ifile=inputs[0], ofile='/tmp/tmp.nc')
