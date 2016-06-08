@@ -133,17 +133,20 @@ class Wrapping(object):
             return "-{},{} {}".format(self.method, self.args, self._ifile)
         return "-{} {}".format(self.method, self._ifile)
 
+    def _generate(self):
+        """Generate a copy of this instance."""
+        new = self.__class__.__new__(self.__class__)
+        new.__dict__ = self.__dict__.copy()
+        return new
+
     def __call__(self, *args, **kwargs):
         """Save args and kwargs of method call as attributes."""
-        if args and len(args) == 1 and isinstance(args[0], list):
-            args = args[0]
-        self.args = ",".join([str(x) for x in args])
+        self.args = hlp.formats(args)
         self.kwargs = kwargs
 
-        s = self.__class__.__new__(self.__class__)
-        s.__dict__ = self.__dict__.copy()
+        wrapper = self._generate()
         new_chain = Chain(self._ifile, self._of, self._op)
-        new_chain._last_command = s
+        new_chain._last_command = wrapper
 
         return new_chain
 
@@ -152,17 +155,18 @@ class Wrapping(object):
         return self.to_cmdstr()
 
     def execute(self):
-        self._returntype = hlp.returntype_of_output(self._of)
+        self._special_return = hlp.check_if_special_return(self._of)
         """Execute chain."""
         f = getattr(Cdo(), self.method, None)
-        if self._returntype and self.args:
+        if self._special_return and self.args:
             return f(self.args, input=self._ifile, options=self._op,
-                     **self._returntype)
+                     **self._special_return)
         elif self.args:
             return f(self.args, input=self._ifile, output=self._of,
                      options=self._op)
-        if self._returntype:
-            return f(input=self._ifile, options=self._op, **self._returntype)
+        if self._special_return:
+            return f(input=self._ifile, options=self._op,
+                     **self._special_return)
         return f(input=self._ifile, output=self._of, options=self._op)
 
 

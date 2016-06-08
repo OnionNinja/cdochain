@@ -8,7 +8,7 @@ from cdo import Cdo
 from cdochain.exceptions import InvalidOutput as ioe
 
 
-def returntype_of_output(ofile):
+def check_if_special_return(ofile):
     """Recognise if output parameter defines (masked) numpy array or file.
 
     Usage
@@ -36,9 +36,11 @@ def returntype_of_output(ofile):
     raise ioe('Return options not recognised, got {}'.format(ofile))
 
 
-def formats(options):
-    """Format options."""
-    return ",".join([str(x) if not isinstance(x, str) else x for x in options])
+def formats(args):
+    """Format arguments."""
+    if args and len(args) == 1 and isinstance(args[0], list):
+        args = args[0]
+    return ",".join([str(x) for x in args])
 
 
 def merge_input(ifile, ofile, options):

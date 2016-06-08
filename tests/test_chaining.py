@@ -124,7 +124,7 @@ def test_multiple_files_glob(filelist):
                                        ('netcdf4', {'returnCdf': True})])
 def test_return_types(ofile, ret):
     """Test for different return types."""
-    assert hlp.returntype_of_output(ofile) == ret
+    assert hlp.check_if_special_return(ofile) == ret
 
 
 @pytest.mark.parametrize('output,expected', [('/tmp/tmp.nc', str),
