@@ -75,7 +75,15 @@ class Chain(object):
 
     def __repr__(self):
         """String representation of objct."""
-        return str(self.__dict__)
+        val = {'ifile': self._ifile,
+               'ofile': self._ofile,
+               'options': self._opts}
+        if self._last_command:
+            val['last_command'] = str(self._last_command)
+        else:
+            val['last_command'] = None
+
+        return str(val)
 
     @staticmethod
     def valid_cdo_method(name):
