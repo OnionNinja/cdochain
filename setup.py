@@ -11,7 +11,7 @@ else:
     long_description = ""
 
 setup(name='cdochain',
-      version='0.2a73',
+      version='0.2b1',
       description='Easy chaining of cdo methods.',
       author='Uğur Çayoğlu',
       author_email='urcyglu@gmail.com',
