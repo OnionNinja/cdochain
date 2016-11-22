@@ -22,5 +22,9 @@ class ChainException(Exception):
 
 class InvalidMethod(ChainException):
     """Error message if chaining gets an invalid method."""
+    pass
 
+
+class InvalidOutput(ChainException):
+    """Error message for unrecognized Output parameters."""
     pass

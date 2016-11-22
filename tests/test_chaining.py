@@ -17,7 +17,7 @@ class Test_Calculations(object):
 
     def setup(self):
         """Setup process."""
-        self.ifile = './test/testdata/sresa1b_ncar_ccsm3-example.nc'
+        self.ifile = './tests/testdata/sresa1b_ncar_ccsm3-example.nc'
         cdomethods = cdo.Cdo()
         self.tmp_iter = cdomethods.mermean(input=self.ifile,
                                            output=self.ifile[:-3]+'-mer.nc',
@@ -72,34 +72,70 @@ class Test_Calculations(object):
         assert res._last_command.to_cmdstr() == "-sellevidx,24 {}".format(
             self.ifile)
 
-inputs = ['./test/testdata/RC1SD-base-08__201301_ECHAM5_tm1-aps-qm1.nc',
-          './test/testdata/RC1SD-base-08__201302_ECHAM5_tm1-aps-qm1.nc',
-          './test/testdata/RC1SD-base-08__201303_ECHAM5_tm1-aps-qm1.nc',
-          './test/testdata/RC1SD-base-08__201304_ECHAM5_tm1-aps-qm1.nc']
+inputs = ['./tests/testdata/RC1SD-base-08__201301_ECHAM5_tm1-aps-qm1.nc',
+          './tests/testdata/RC1SD-base-08__201302_ECHAM5_tm1-aps-qm1.nc',
+          './tests/testdata/RC1SD-base-08__201303_ECHAM5_tm1-aps-qm1.nc',
+          './tests/testdata/RC1SD-base-08__201304_ECHAM5_tm1-aps-qm1.nc']
+
+
+def test_entry_is_list():
+    source = cch.Chain(ifile=inputs[0], ofile='/tmp/tmp.nc')
+    plvls = [0.99, 4.28, 11.12, 23.15, 42.59]
+    plvls_str = ','.join([str(x) for x in plvls])
+    calc = source.ml2pl(plvls)
+    assert str(calc._last_command) == '-ml2pl,{} {}'.format(plvls_str, inputs[0])
+
+
+def test_reusage_of_source():
+    """Source ready for reuse."""
+    source = cch.Chain(ifile=inputs[0], ofile='/tmp/tmp.nc')
+    h2 = source.mermean()
+    h1 = source.sellevidx(2).zonmean()
+    h3 = source.sellevidx(1)
+    assert h2._ifile == inputs[0]
+    assert h3._ifile == inputs[0]
+    assert h1._ifile != inputs[0]
+    assert 'mermean' not in h1._ifile
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize("filelist", [inputs])
 def test_multiple_files_list(filelist):
     """Test the usage of multiple files as input."""
-    out = cch.Chain(ifile=filelist, ofile='./test/testdata/outputs.nc')
+    out = cch.Chain(ifile=filelist, ofile='./tests/testdata/outputs.nc')
     assert out._ifile == '/tmp/outputs.nc'
     os.remove(out._ifile)
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize("filelist",
-                         ["./test/testdata/RC1SD-base-08__20130*.nc"])
+                         ["./tests/testdata/RC1SD-base-08__20130*.nc"])
 def test_multiple_files_glob(filelist):
     """Test the usage of multiple files as input."""
-    out = cch.Chain(ifile=filelist, ofile='./test/testdata/outputs.nc')
+    out = cch.Chain(ifile=filelist, ofile='./tests/testdata/outputs.nc')
     assert out._ifile == '/tmp/outputs.nc'
     os.remove(out._ifile)
 
 
-def test_return_types():
+@pytest.mark.parametrize('ofile,ret', [('/tmp/tmp.nc', None),
+                                       ('Array:tm1', {'returnArray': 'tm1'}),
+                                       ('MaArray:tm1',
+                                        {'returnMaArray': 'tm1'}),
+                                       ('netcdf4', {'returnCdf': True})])
+def test_return_types(ofile, ret):
     """Test for different return types."""
-    assert False
+    assert hlp.check_if_special_return(ofile) == ret
+
+
+@pytest.mark.parametrize('output,expected', [('/tmp/tmp.nc', str),
+                                             ('array:tm1', np.ndarray),
+                                             ('maarray:tm1', np.ndarray),
+                                             ('netcdf4', ncd.Dataset),
+                                             ])
+def test_return_types_in_chain(output, expected):
+    init = cch.Chain(inputs[0], output)
+    lvl = init.sellevidx(3).execute()
+    assert isinstance(lvl, expected)
 
 
 def test_format_inputs():
@@ -112,18 +148,18 @@ def test_format_inputs():
 
 def test_initializing():
     """Test if initilalisation is working."""
-    init = cch.Chain("inputfile", "outputfile", "options")
+    init = cch.Chain("inputfile", "outputfile.nc", "options")
     assert isinstance(init, cch.Chain)
 
 
 def test_invalid_method():
     """Test if invalid input raises proper exception."""
-    init = cch.Chain("inputfile", "outputfile", "options")
+    init = cch.Chain("inputfile", "outputfile.nc", "options")
     with pytest.raises(ex.InvalidMethod):
         init.coolmean("32")
 
 
 def test_valid_method():
     """Test if one valid input is accepted."""
-    init = cch.Chain("inputfile", "outputfile", "options")
+    init = cch.Chain("inputfile", "outputfile.nc", "options")
     init.mermean("32")
