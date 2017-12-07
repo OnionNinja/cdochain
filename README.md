@@ -1,4 +1,4 @@
-#  :exclamation: :exclamation: [DEPRECATED] cdochain
+# [DEPRECATED] cdochain :exclamation: :exclamation: 
 > Please use [github.com/ucyo/xsuite](https://github.com/ucyo/xsuite)
 
 This module helps create chains of cdo commands for easy manipulation of climate data.
